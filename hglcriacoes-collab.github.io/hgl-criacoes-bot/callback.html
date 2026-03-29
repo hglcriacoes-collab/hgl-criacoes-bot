@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Callback TikTok - HGL Criações</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        .success {
+            color: #10b981;
+            font-size: 48px;
+            margin: 20px 0;
+        }
+        .code-box {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            border: 2px solid #667eea;
+        }
+        .btn {
+            background: #667eea;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-copy {
+            background: #10b981;
+        }
+        .btn-copy:hover {
+            background: #059669;
+        }
+        .info {
+            color: #6b7280;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .error {
+            color: #ef4444;
+            background: #fee2e2;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 Autenticação TikTok</h1>
+        <div id="content">
+            <div class="success">✓</div>
+            <h2>Autenticação realizada com sucesso!</h2>
+            <p>O TikTok retornou o seguinte código:</p>
+            <div class="code-box" id="codeDisplay">
+                Carregando...
+            </div>
+            <button class="btn btn-copy" onclick="copyCode()">📋 Copiar Código</button>
+            <button class="btn" onclick="closeWindow()">❌ Fechar Janela</button>
+            <p class="info">
+                Copie o código acima e cole no terminal do Python para continuar.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Extrair parâmetros da URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        const state = urlParams.get('state');
+        const error = urlParams.get('error');
+
+        if (error) {
+            document.getElementById('content').innerHTML = `
+                <div class="error">
+                    <h3>❌ Erro na Autenticação</h3>
+                    <p><strong>${error}</strong></p>
+                    <p>${urlParams.get('error_description') || 'Tente novamente.'}</p>
+                </div>
+                <button class="btn" onclick="closeWindow()">Fechar</button>
+            `;
+        } else if (code) {
+            // Exibir o código
+            document.getElementById('codeDisplay').textContent = code;
+            
+            // Salvar no localStorage para facilitar
+            localStorage.setItem('tiktok_auth_code', code);
+            
+            // Opcional: tentar enviar para um servidor local se existir
+            fetch('http://localhost:8080/callback', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code: code })
+            }).catch(() => {
+                // Ignora erro - servidor local pode não estar rodando
+            });
+        } else {
+            document.getElementById('content').innerHTML = `
+                <div class="error">
+                    <h3>⚠️ Nenhum código recebido</h3>
+                    <p>Verifique se a autenticação foi completada corretamente.</p>
+                </div>
+                <button class="btn" onclick="closeWindow()">Fechar</button>
+            `;
+        }
+
+        function copyCode() {
+            const codeText = document.getElementById('codeDisplay').textContent;
+            if (codeText && codeText !== 'Carregando...') {
+                navigator.clipboard.writeText(codeText).then(() => {
+                    alert('✅ Código copiado para a área de transferência!');
+                });
+            }
+        }
+
+        function closeWindow() {
+            window.close();
+        }
+
+        // Fechar automaticamente após 30 segundos
+        setTimeout(() => {
+            if (confirm('Deseja fechar esta janela?')) {
+                window.close();
+           
