@@ -98,13 +98,6 @@ Sempre responda em português brasileiro.`,
     });
   };
 
-  const handleSaveSocial = () => {
-    toast({
-      title: 'Redes sociais configuradas!',
-      description: 'Suas credenciais foram salvas com sucesso.',
-    });
-  };
-
   const selectedProvider = aiProviders.find(p => p.id === aiConfig.provider);
 
   return (
