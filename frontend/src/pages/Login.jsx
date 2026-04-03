@@ -7,6 +7,7 @@ import { Label } from '../components/ui/label';
 import { Card } from '../components/ui/card';
 import { Zap, Mail, Lock, User } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
+import GoogleLoginButton from '../components/GoogleLoginButton';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -65,6 +66,18 @@ const Login = () => {
             ? 'Crie sua conta e comece a criar conteúdo viral'
             : 'Entre na sua conta para continuar'}
         </p>
+
+        {/* Google Login Button */}
+        <div className="mb-6">
+          <GoogleLoginButton />
+        </div>
+
+        {/* Divider */}
+        <div className="flex items-center gap-4 mb-6">
+          <div className="flex-1 h-px bg-gray-700"></div>
+          <span className="text-gray-500 text-sm">ou</span>
+          <div className="flex-1 h-px bg-gray-700"></div>
+        </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">

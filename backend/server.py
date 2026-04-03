@@ -7,7 +7,7 @@ import logging
 from pathlib import Path
 
 # Import routes
-from routes import auth, user, projects, settings, chat, social_automation, video_processing
+from routes import auth, user, projects, settings, chat, social_automation, video_processing, google_auth
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -30,6 +30,7 @@ async def root():
 
 # Include all routers
 app.include_router(auth.router, prefix="")
+app.include_router(google_auth.router, prefix="")
 app.include_router(user.router, prefix="")
 app.include_router(projects.router, prefix="")
 app.include_router(settings.router, prefix="")
