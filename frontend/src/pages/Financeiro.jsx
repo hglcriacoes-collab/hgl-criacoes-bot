@@ -41,14 +41,14 @@ const Financeiro = () => {
             <Button
               variant={billingCycle === 'monthly' ? 'default' : 'ghost'}
               onClick={() => setBillingCycle('monthly')}
-              className={billingCycle === 'monthly' ? 'bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 text-white' : 'text-gray-400'}
+              className={billingCycle === 'monthly' ? 'bg-gradient-to-r from-yellow-400 via-yellow-300 to-green-500 text-black' : 'text-gray-400'}
             >
               Mensal
             </Button>
             <Button
               variant={billingCycle === 'annual' ? 'default' : 'ghost'}
               onClick={() => setBillingCycle('annual')}
-              className={billingCycle === 'annual' ? 'bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 text-white' : 'text-gray-400'}
+              className={billingCycle === 'annual' ? 'bg-gradient-to-r from-yellow-400 via-yellow-300 to-green-500 text-black' : 'text-gray-400'}
             >
               Anual
             </Button>
@@ -80,7 +80,7 @@ const Financeiro = () => {
 
                   {/* Price */}
                   <div className="mb-6">
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 text-5xl font-bold">
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-300 to-green-500 text-5xl font-bold">
                       R$ {plan.price.toFixed(2).replace('.', ',')}
                     </span>
                     <span className="text-gray-400 text-lg">/mês</span>
@@ -115,10 +115,10 @@ const Financeiro = () => {
 
                   <div className="text-center mb-6 text-sm">
                     <span className="text-gray-400">até </span>
-                    <span className="text-purple-400 font-semibold">{plan.clipsPerMonth.toLocaleString('pt-BR')}</span>
+                    <span className="text-yellow-400 font-semibold">{plan.clipsPerMonth.toLocaleString('pt-BR')}</span>
                     <span className="text-gray-400"> clipes/mês</span>
                     <span className="mx-2 text-gray-600">|</span>
-                    <span className="text-pink-400 font-semibold">R${plan.extras.toLocaleString('pt-BR')}</span>
+                    <span className="text-green-400 font-semibold">R${plan.extras.toLocaleString('pt-BR')}</span>
                     <span className="text-gray-400"> /clips</span>
                   </div>
 

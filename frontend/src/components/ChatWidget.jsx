@@ -46,9 +46,9 @@ const ChatWidget = () => {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-br from-purple-500 via-pink-500 to-blue-500 rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform z-50"
+          className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-br from-yellow-400 via-yellow-300 to-green-500 rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform z-50"
         >
-          <MessageCircle className="w-6 h-6 text-white" />
+          <MessageCircle className="w-6 h-6 text-black" />
         </button>
       )}
 
@@ -56,10 +56,10 @@ const ChatWidget = () => {
       {isOpen && (
         <div className="fixed bottom-6 right-6 w-96 h-[500px] bg-[#0a0a0a] border border-gray-800 rounded-2xl shadow-2xl flex flex-col z-50">
           {/* Header */}
-          <div className="bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-blue-500/20 border-b border-gray-800 p-4 flex items-center justify-between rounded-t-2xl">
+          <div className="bg-gradient-to-r from-yellow-500/20 via-yellow-400/20 to-green-500/20 border-b border-gray-800 p-4 flex items-center justify-between rounded-t-2xl">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 via-pink-500 to-blue-500 rounded-full flex items-center justify-center">
-                <MessageCircle className="w-5 h-5 text-white" />
+              <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 via-yellow-300 to-green-500 rounded-full flex items-center justify-center">
+                <MessageCircle className="w-5 h-5 text-black" />
               </div>
               <div>
                 <h3 className="text-white font-semibold text-sm">Assistente Virtual HGL</h3>
@@ -84,7 +84,7 @@ const ChatWidget = () => {
                 <div
                   className={`max-w-[80%] rounded-2xl px-4 py-2 ${
                     message.sender === 'user'
-                      ? 'bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 text-white'
+                      ? 'bg-gradient-to-r from-yellow-400 via-yellow-300 to-green-500 text-black'
                       : 'bg-gray-800 text-white'
                   }`}
                 >
@@ -106,7 +106,7 @@ const ChatWidget = () => {
               />
               <Button
                 onClick={handleSend}
-                className="bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 text-white hover:opacity-90"
+                className="bg-gradient-to-r from-yellow-400 via-yellow-300 to-green-500 text-black hover:opacity-90"
               >
                 <Send className="w-4 h-4" />
               </Button>

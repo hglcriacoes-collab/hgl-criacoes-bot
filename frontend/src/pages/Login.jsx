@@ -50,8 +50,8 @@ const Login = () => {
       <Card className="w-full max-w-md bg-[#1a1a1a] border border-gray-800 p-8">
         {/* Logo */}
         <div className="flex items-center justify-center gap-3 mb-8">
-          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 via-pink-500 to-blue-500 flex items-center justify-center">
-            <Zap className="w-7 h-7 text-white" />
+          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-yellow-400 via-yellow-300 to-green-500 flex items-center justify-center">
+            <Zap className="w-7 h-7 text-black" />
           </div>
           <span className="text-3xl font-bold text-white">HGL Oficial</span>
         </div>
@@ -118,7 +118,7 @@ const Login = () => {
           <Button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 text-white hover:opacity-90 py-6 text-lg"
+            className="w-full bg-gradient-to-r from-yellow-400 via-yellow-300 to-green-500 text-black hover:opacity-90 py-6 text-lg font-semibold"
           >
             {loading ? 'Carregando...' : isRegister ? 'Criar Conta' : 'Entrar'}
           </Button>
@@ -128,7 +128,7 @@ const Login = () => {
         <div className="mt-6 text-center">
           <button
             onClick={() => setIsRegister(!isRegister)}
-            className="text-purple-400 hover:text-purple-300 transition-colors"
+            className="text-yellow-400 hover:text-yellow-300 transition-colors"
           >
             {isRegister
               ? 'Já tem uma conta? Entrar'
