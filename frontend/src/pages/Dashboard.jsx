@@ -1,39 +1,149 @@
 import React, { useState } from 'react';
-import { Upload, Link as LinkIcon, Sparkles } from 'lucide-react';
+import { Upload as UploadIcon, Film, Scissors, Download, Loader2, CheckCircle } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { tools, recentProjects } from '../mockData';
-import * as Icons from 'lucide-react';
+import { useToast } from '../hooks/use-toast';
+import { useAuth } from '../context/AuthContext';
+import axios from 'axios';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const Dashboard = () => {
+  const { token } = useAuth();
+  const { toast } = useToast();
+  const [videoFile, setVideoFile] = useState(null);
   const [videoUrl, setVideoUrl] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadedVideo, setUploadedVideo] = useState(null);
+  const [processing, setProcessing] = useState(false);
+  const [clips, setClips] = useState([]);
 
-  const getIcon = (iconName) => {
-    const Icon = Icons[iconName.charAt(0).toUpperCase() + iconName.slice(1).replace(/-/g, '')] || Icons.Film;
-    return Icon;
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 500 * 1024 * 1024) { // 500MB limit
+        toast({
+          title: 'Erro',
+          description: 'Arquivo muito grande! Máximo 500MB',
+          variant: 'destructive'
+        });
+        return;
+      }
+      setVideoFile(file);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!videoFile && !videoUrl) {
+      toast({
+        title: 'Erro',
+        description: 'Selecione um vídeo ou cole uma URL',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    setUploading(true);
+    setUploadProgress(0);
+
+    try {
+      if (videoFile) {
+        const formData = new FormData();
+        formData.append('file', videoFile);
+
+        const response = await axios.post(
+          `${API_URL}/api/video/upload`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'multipart/form-data'
+            },
+            onUploadProgress: (progressEvent) => {
+              const progress = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total
+              );
+              setUploadProgress(progress);
+            }
+          }
+        );
+
+        setUploadedVideo(response.data);
+        toast({
+          title: 'Sucesso!',
+          description: 'Vídeo enviado com sucesso!'
+        });
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast({
+        title: 'Erro no upload',
+        description: error.response?.data?.detail || 'Erro ao enviar vídeo',
+        variant: 'destructive'
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleAutoCut = async () => {
+    if (!uploadedVideo) return;
+
+    setProcessing(true);
+    try {
+      const response = await axios.post(
+        `${API_URL}/api/video/auto-cut/${uploadedVideo.video_id}`,
+        {
+          clip_duration: 30,
+          max_clips: 5
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      setClips(response.data.clips);
+      toast({
+        title: 'Sucesso!',
+        description: `${response.data.clips.length} clips criados!`
+      });
+    } catch (error) {
+      toast({
+        title: 'Erro',
+        description: 'Erro ao processar vídeo',
+        variant: 'destructive'
+      });
+    } finally {
+      setProcessing(false);
+    }
   };
 
   return (
     <div className="space-y-8">
       {/* Hero Section */}
-      <div className="text-center py-12">
+      <div className="text-center py-8">
         <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
           Seu próximo viral começa aqui
         </h1>
+        <p className="text-gray-400 text-lg">Faça upload e crie clips virais automaticamente</p>
       </div>
 
       {/* Upload Section */}
       <Card className="bg-gradient-to-br from-gray-900 to-black border border-gray-800 p-8">
         <div className="max-w-2xl mx-auto space-y-6">
+          <h2 className="text-2xl font-bold text-white text-center mb-6">Upload de Vídeo</h2>
+
           {/* URL Input */}
-          <div className="relative">
-            <LinkIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
+          <div className="space-y-2">
+            <label className="text-white text-sm font-medium">URL do Vídeo (YouTube, Google Drive)</label>
             <Input
               value={videoUrl}
               onChange={(e) => setVideoUrl(e.target.value)}
-              placeholder="Cole um link do Youtube, Google Drive ou .mp4"
-              className="bg-gray-800/50 border-gray-700 text-white pl-12 py-6 text-base"
+              placeholder="https://youtube.com/watch?v=..."
+              className="bg-gray-800/50 border-gray-700 text-white"
+              disabled={uploading}
             />
           </div>
 
@@ -45,91 +155,140 @@ const Dashboard = () => {
           </div>
 
           {/* File Upload */}
-          <div className="border-2 border-dashed border-gray-700 rounded-xl p-8 text-center hover:border-gray-600 transition-colors cursor-pointer">
-            <Upload className="w-12 h-12 text-gray-500 mx-auto mb-4" />
-            <p className="text-white mb-2">Envie seu arquivo</p>
-            <p className="text-gray-500 text-sm">MP4, MOV, MKV ou AVI. Máximo 10 horas ou 4GB</p>
+          <div className="space-y-4">
+            <label className="text-white text-sm font-medium">Arquivo Local</label>
+            <div className="border-2 border-dashed border-gray-700 rounded-xl p-8 text-center hover:border-gray-600 transition-colors">
+              <input
+                type="file"
+                accept="video/*"
+                onChange={handleFileChange}
+                className="hidden"
+                id="video-upload"
+                disabled={uploading}
+              />
+              <label htmlFor="video-upload" className="cursor-pointer">
+                <UploadIcon className="w-12 h-12 text-gray-500 mx-auto mb-4" />
+                <p className="text-white mb-2">
+                  {videoFile ? videoFile.name : 'Clique para selecionar ou arraste aqui'}
+                </p>
+                <p className="text-gray-500 text-sm">MP4, MOV, MKV ou AVI. Máximo 500MB</p>
+              </label>
+            </div>
           </div>
 
-          {/* Generate Button */}
-          <Button className="w-full bg-gradient-to-r from-purple-600 via-purple-500 to-pink-500 hover:opacity-90 text-white py-6 text-lg font-semibold">
-            <Sparkles className="w-5 h-5 mr-2" />
-            Gerar Clipes
+          {/* Upload Progress */}
+          {uploading && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-400">Enviando...</span>
+                <span className="text-white font-medium">{uploadProgress}%</span>
+              </div>
+              <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-yellow-400 via-yellow-300 to-green-500 transition-all duration-300"
+                  style={{ width: `${uploadProgress}%` }}
+                ></div>
+              </div>
+            </div>
+          )}
+
+          {/* Upload Button */}
+          <Button
+            onClick={handleUpload}
+            disabled={uploading || (!videoFile && !videoUrl)}
+            className="w-full bg-gradient-to-r from-yellow-400 via-yellow-300 to-green-500 text-black hover:opacity-90 py-6 text-lg font-semibold"
+          >
+            {uploading ? (
+              <>
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                Enviando...
+              </>
+            ) : (
+              <>
+                <UploadIcon className="w-5 h-5 mr-2" />
+                Fazer Upload
+              </>
+            )}
           </Button>
         </div>
       </Card>
 
-      {/* Ferramentas */}
-      <div>
-        <h2 className="text-2xl font-bold text-white mb-6">FERRAMENTAS</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {tools.map((tool) => {
-            const Icon = getIcon(tool.icon);
-            return (
-              <Card
-                key={tool.id}
-                className="bg-[#1a1a1a] border border-gray-800 hover:border-gray-700 transition-all p-6 cursor-pointer group"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Icon className="w-6 h-6 text-purple-400" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-white font-semibold mb-2">{tool.name}</h3>
-                    <p className="text-gray-400 text-sm">{tool.description}</p>
-                  </div>
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-      </div>
+      {/* Video Uploaded - Processing Options */}
+      {uploadedVideo && (
+        <Card className="bg-[#1a1a1a] border border-gray-800 p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <CheckCircle className="w-6 h-6 text-green-500" />
+            <div>
+              <h3 className="text-white font-semibold">Vídeo Enviado!</h3>
+              <p className="text-gray-400 text-sm">Pronto para processar</p>
+            </div>
+          </div>
 
-      {/* Últimos Projetos */}
-      <div>
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-white">ÚLTIMOS PROJETOS</h2>
-          <Button variant="ghost" className="text-gray-400 hover:text-white">
-            Ver todos →
-          </Button>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {recentProjects.map((project) => (
-            <Card
-              key={project.id}
-              className="bg-[#1a1a1a] border border-gray-800 hover:border-gray-700 transition-all overflow-hidden group cursor-pointer"
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Button
+              onClick={handleAutoCut}
+              disabled={processing}
+              className="bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:opacity-90 py-6"
             >
-              {/* Thumbnail */}
-              <div className="relative aspect-video bg-gray-900">
-                <img
-                  src={project.thumbnail}
-                  alt={project.title}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-3 left-3 bg-green-500 text-black px-3 py-1 rounded-full text-xs font-semibold">
-                  {project.status}
-                </div>
-                <div className="absolute top-3 right-3 bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold">
-                  ● LIVE
-                </div>
-              </div>
+              {processing ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Processando...
+                </>
+              ) : (
+                <>
+                  <Scissors className="w-5 h-5 mr-2" />
+                  Cortar Automaticamente
+                </>
+              )}
+            </Button>
 
-              {/* Content */}
-              <div className="p-4">
-                <h3 className="text-white font-semibold mb-3">{project.title}</h3>
-                <p className="text-gray-400 text-sm mb-3">
-                  🕒 {project.duration} ⏱️ {project.duration.split('—')[1]}
+            <Button
+              variant="outline"
+              className="border-gray-700 text-white hover:bg-gray-800 py-6"
+            >
+              <Film className="w-5 h-5 mr-2" />
+              Corte Manual
+            </Button>
+          </div>
+        </Card>
+      )}
+
+      {/* Clips Generated */}
+      {clips.length > 0 && (
+        <div>
+          <h2 className="text-2xl font-bold text-white mb-6">Clips Gerados ({clips.length})</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {clips.map((clip, index) => (
+              <Card key={clip.id} className="bg-[#1a1a1a] border border-gray-800 p-4">
+                <div className="aspect-video bg-gray-900 rounded-lg mb-4 flex items-center justify-center">
+                  <Film className="w-12 h-12 text-gray-600" />
+                </div>
+                <h3 className="text-white font-semibold mb-2">Clip {index + 1}</h3>
+                <p className="text-gray-400 text-sm mb-4">
+                  {clip.start_time}s - {clip.end_time}s ({clip.duration}s)
                 </p>
                 <div className="flex gap-2">
-                  <span className="bg-gray-800 text-gray-300 px-3 py-1 rounded text-xs">{project.views}</span>
-                  <span className="bg-gray-800 text-gray-300 px-3 py-1 rounded text-xs">{project.engagement}</span>
-                  <span className="bg-gray-800 text-gray-300 px-3 py-1 rounded text-xs">{project.algorithm}</span>
+                  <Button
+                    size="sm"
+                    className="flex-1 bg-gradient-to-r from-yellow-400 to-green-500 text-black"
+                  >
+                    <Download className="w-4 h-4 mr-1" />
+                    Baixar
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="flex-1 border-gray-700 text-white"
+                  >
+                    Postar
+                  </Button>
                 </div>
-              </div>
-            </Card>
-          ))}
+              </Card>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

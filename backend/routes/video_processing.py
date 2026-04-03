@@ -184,7 +184,11 @@ async def auto_cut_video(
             }
             
             await db.clips.insert_one(clip_record)
-            clips_created.append(clip_record)
+            # Remove MongoDB ObjectId before adding to response
+            clip_response = clip_record.copy()
+            if '_id' in clip_response:
+                del clip_response['_id']
+            clips_created.append(clip_response)
         except Exception as e:
             print(f"Erro ao criar clip {i+1}: {str(e)}")
             continue
