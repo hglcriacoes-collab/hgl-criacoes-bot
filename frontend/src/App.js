@@ -18,6 +18,7 @@ import MeusVideos from './pages/MeusVideos';
 import Agendamento from './pages/Agendamento';
 import BrandKit from './pages/BrandKit';
 import Campeonatos from './pages/Campeonatos';
+import VideoConfigPage from './pages/VideoConfigPage';
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
                         <Routes>
                           <Route path="/" element={<Navigate to="/dashboard" replace />} />
                           <Route path="/dashboard" element={<Dashboard />} />
+                          <Route path="/video-config" element={<VideoConfigPage />} />
                           <Route path="/editor" element={<VideoEditor />} />
                           <Route path="/hub-conteudo" element={<HubConteudo />} />
                           <Route path="/redes-sociais" element={<RedesSociais />} />

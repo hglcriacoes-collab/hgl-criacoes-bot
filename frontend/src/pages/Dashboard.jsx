@@ -51,15 +51,8 @@ const Dashboard = () => {
       
       setVideoInfo(videoInfo);
       
-      if (videoInfo.needsCut) {
-        navigate('/editor', { state: { videoInfo, url } });
-      } else {
-        toast({
-          title: 'Vídeo pronto!',
-          description: 'Vídeo menor que 30s não precisa de cortes'
-        });
-        navigate('/editor', { state: { videoInfo, url, skipCut: true } });
-      }
+      // Redirecionar para página de configuração antes do editor
+      navigate('/video-config', { state: { videoInfo, url } });
     } catch (error) {
       toast({
         title: 'Erro',
