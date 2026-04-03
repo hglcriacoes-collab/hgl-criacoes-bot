@@ -238,7 +238,7 @@ Sempre responda em português brasileiro.`,
 
               <Button
                 onClick={handleSaveAI}
-                className="w-full bg-gradient-to-r from-yellow-500 via-green-500 to-blue-500 text-black hover:opacity-90"
+                className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 text-white hover:opacity-90"
               >
                 <Save className="w-4 h-4 mr-2" />
                 Salvar Configurações de IA
@@ -285,7 +285,7 @@ Sempre responda em português brasileiro.`,
 
               <Button
                 onClick={handleSavePayment}
-                className="w-full bg-gradient-to-r from-yellow-500 via-green-500 to-blue-500 text-black hover:opacity-90"
+                className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 text-white hover:opacity-90"
               >
                 <Save className="w-4 h-4 mr-2" />
                 Salvar Métodos de Pagamento
@@ -330,7 +330,7 @@ Sempre responda em português brasileiro.`,
 
               <Button
                 onClick={handleSaveWhatsApp}
-                className="w-full bg-gradient-to-r from-yellow-500 via-green-500 to-blue-500 text-black hover:opacity-90"
+                className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 text-white hover:opacity-90"
               >
                 <Save className="w-4 h-4 mr-2" />
                 Salvar Configurações do WhatsApp

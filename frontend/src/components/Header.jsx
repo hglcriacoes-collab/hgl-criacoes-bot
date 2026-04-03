@@ -74,8 +74,8 @@ const Header = ({ title }) => {
 
           {/* User */}
           <button className="flex items-center gap-2 hover:bg-gray-800 px-3 py-2 rounded-lg transition-colors">
-            <div className="w-8 h-8 bg-gradient-to-br from-yellow-400 to-green-400 rounded-full flex items-center justify-center">
-              <User className="w-5 h-5 text-black" />
+            <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
+              <User className="w-5 h-5 text-white" />
             </div>
           </button>
         </div>
