@@ -6,7 +6,11 @@ import * as Icons from 'lucide-react';
 
 const RedesSociais = () => {
   const handleConnect = (network) => {
-    alert(`Conectar com ${network.name} - Funcionalidade em desenvolvimento`);
+    if (network.name === 'Kwai' || network.name === 'Snapchat') {
+      alert(`${network.name}: Integração via automação (Playwright) em desenvolvimento.\n\nPor enquanto, configure em Configurações → Redes Sociais`);
+    } else {
+      alert(`${network.name}: Integração via API em desenvolvimento.\n\nPor enquanto, configure em Configurações → Redes Sociais`);
+    }
   };
 
   const getIcon = (iconName) => {

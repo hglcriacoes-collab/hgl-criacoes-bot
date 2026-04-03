@@ -60,6 +60,12 @@ const VideoConfigPage = () => {
       const API_URL = process.env.REACT_APP_BACKEND_URL;
       const token = localStorage.getItem('token');
       
+      if (!token) {
+        alert('Token não encontrado. Faça login novamente.');
+        navigate('/login');
+        return;
+      }
+      
       const response = await fetch(`${API_URL}/api/video/process-clips`, {
         method: 'POST',
         headers: {
@@ -67,7 +73,7 @@ const VideoConfigPage = () => {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          video_url: url,
+          video_url: url || videoInfo.videoUrl,
           video_duration: videoInfo.duration,
           clip_duration: clipDuration === 'automatico' ? 15 : parseInt(clipDuration),
           format: format,
@@ -76,6 +82,11 @@ const VideoConfigPage = () => {
         })
       });
       
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'Erro ao processar vídeo');
+      }
+      
       const data = await response.json();
       
       if (data.success) {
@@ -83,7 +94,7 @@ const VideoConfigPage = () => {
         navigate('/editor', {
           state: {
             videoInfo,
-            url,
+            url: url || videoInfo.videoUrl,
             jobId: data.job_id,
             numClips: data.num_clips,
             config: {
@@ -99,7 +110,7 @@ const VideoConfigPage = () => {
       }
     } catch (error) {
       console.error('Erro:', error);
-      alert('Erro ao processar vídeo');
+      alert(error.message || 'Erro ao processar vídeo. Tente novamente.');
     }
   };
 

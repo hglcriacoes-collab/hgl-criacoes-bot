@@ -89,14 +89,16 @@ const Login = () => {
                 <Github className="w-6 h-6 text-white" />
               </button>
               <button
-                onClick={() => handleSocialLogin('Apple')}
+                onClick={() => alert('Apple Login em desenvolvimento.\n\nUse Email/Senha por enquanto.')}
                 className="w-14 h-14 bg-gray-800 hover:bg-gray-700 rounded-full flex items-center justify-center transition-colors"
+                title="Apple Login (em breve)"
               >
                 <Apple className="w-6 h-6 text-white" />
               </button>
               <button
-                onClick={() => handleSocialLogin('Facebook')}
+                onClick={() => alert('Facebook Login em desenvolvimento.\n\nUse Email/Senha por enquanto.')}
                 className="w-14 h-14 bg-gray-800 hover:bg-gray-700 rounded-full flex items-center justify-center transition-colors"
+                title="Facebook Login (em breve)"
               >
                 <Facebook className="w-6 h-6 text-white" />
               </button>
