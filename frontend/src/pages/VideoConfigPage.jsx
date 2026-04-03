@@ -9,12 +9,11 @@ const VideoConfigPage = () => {
   const navigate = useNavigate();
   const { videoInfo, url } = location.state || {};
   
-  const [format, setFormat] = useState('vertical'); // vertical ou horizontal
-  const [framing, setFraming] = useState('automatico'); // automatico, centro, foco, tela-dividida, repost
-  const [clipDuration, setClipDuration] = useState('automatico'); // automatico, 30, 60, 90, 180, 300, 900
+  const [format, setFormat] = useState('vertical');
+  const [framing, setFraming] = useState('automatico');
+  const [clipDuration, setClipDuration] = useState('automatico');
   const [calculatedClips, setCalculatedClips] = useState(null);
 
-  // Opções de duração
   const durationOptions = [
     { value: 'automatico', label: 'Automático', seconds: 15, icon: '⚡' },
     { value: '30', label: '30 seg', seconds: 30, icon: '⏱️' },
@@ -25,18 +24,13 @@ const VideoConfigPage = () => {
     { value: '900', label: '15 min', seconds: 900, icon: '⏱️' }
   ];
 
-  // Calcular cortes baseado na lógica matemática do usuário
   useEffect(() => {
     if (videoInfo && videoInfo.duration) {
       const selectedOption = durationOptions.find(opt => opt.value === clipDuration);
       const desiredDuration = selectedOption ? selectedOption.seconds : 15;
       
       const totalSeconds = videoInfo.duration;
-      
-      // Lógica: dividir total pela duração desejada e arredondar
       const numClips = Math.round(totalSeconds / desiredDuration);
-      
-      // Calcular duração real de cada corte
       const realDuration = totalSeconds / numClips;
       
       setCalculatedClips({
@@ -55,54 +49,63 @@ const VideoConfigPage = () => {
   };
 
   const handleNext = async () => {
-    // Timestamp para forçar nova versão: 2026-04-03-23:00
-    console.log('VideoConfigPage - Versão Nova: 2026-04-03-23:00');
+    console.log('🔥 NOVA VERSÃO - 2026-04-03 23:30');
     
     try {
-      // Chamar API para processar os cortes
       const API_URL = process.env.REACT_APP_BACKEND_URL;
       const token = localStorage.getItem('token');
       
       if (!token) {
-        alert('Token não encontrado. Faça login novamente.');
+        alert('Faça login novamente');
         navigate('/login');
         return;
       }
+
+      console.log('📤 Enviando...');
       
-      console.log('Enviando requisição para:', `${API_URL}/api/video/process-clips`);
-      
+      const requestBody = {
+        video_url: url || videoInfo?.videoUrl || '',
+        video_duration: videoInfo?.duration || 0,
+        clip_duration: clipDuration === 'automatico' ? 15 : parseInt(clipDuration),
+        format: format,
+        framing: framing,
+        apply_bypass: true
+      };
+
+      console.log('📦 Dados:', requestBody);
+
       const response = await fetch(`${API_URL}/api/video/process-clips`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({
-          video_url: url || videoInfo.videoUrl,
-          video_duration: videoInfo.duration,
-          clip_duration: clipDuration === 'automatico' ? 15 : parseInt(clipDuration),
-          format: format,
-          framing: framing,
-          apply_bypass: true
-        })
+        body: JSON.stringify(requestBody)
       });
-      
-      console.log('Response recebido:', response.status);
-      
-      // ✅ CORREÇÃO: Ler response apenas UMA vez
-      const data = await response.json();
-      console.log('Data parseado:', data);
-      
-      if (!response.ok) {
-        throw new Error(data.detail || data.message || 'Erro ao processar vídeo');
+
+      console.log('📥 Response status:', response.status);
+
+      // CRÍTICO: Ler JSON apenas UMA vez
+      let data;
+      try {
+        data = await response.json();
+        console.log('✅ Data:', data);
+      } catch (jsonError) {
+        console.error('❌ Erro ao parsear JSON:', jsonError);
+        throw new Error('Erro ao processar resposta do servidor');
       }
-      
+
+      if (!response.ok) {
+        console.error('❌ Response não OK:', data);
+        throw new Error(data.detail || data.message || 'Erro ao processar');
+      }
+
       if (data.success) {
-        // Navegar para página de processamento com job_id
+        console.log('✅ Sucesso! Navegando...');
         navigate('/editor', {
           state: {
             videoInfo,
-            url: url || videoInfo.videoUrl,
+            url: url || videoInfo?.videoUrl,
             jobId: data.job_id,
             numClips: data.num_clips,
             config: {
@@ -114,11 +117,11 @@ const VideoConfigPage = () => {
           }
         });
       } else {
-        alert('Erro ao iniciar processamento');
+        throw new Error(data.message || 'Erro desconhecido');
       }
     } catch (error) {
-      console.error('Erro:', error);
-      alert(error.message || 'Erro ao processar vídeo. Tente novamente.');
+      console.error('❌ ERRO CAPTURADO:', error);
+      alert('Erro: ' + error.message);
     }
   };
 
@@ -138,17 +141,25 @@ const VideoConfigPage = () => {
           </p>
         </div>
 
-        {/* Video Info */}
-        <Card className="bg-gray-900 border-gray-800 p-4 flex items-center gap-4">
-          <img 
-            src={videoInfo.thumbnail} 
-            alt={videoInfo.title}
-            className="w-24 h-16 object-cover rounded"
-            onError={(e) => e.target.style.display = 'none'}
-          />
-          <div className="flex-1">
-            <p className="text-white font-medium truncate">{videoInfo.title}</p>
-            <p className="text-gray-400 text-sm">Duração: {formatTime(videoInfo.duration)}</p>
+        {/* Video Info Card */}
+        <Card className="bg-gray-900 border-gray-800 p-4">
+          <div className="flex items-center gap-4">
+            {videoInfo.thumbnail && (
+              <img 
+                src={videoInfo.thumbnail} 
+                alt={videoInfo.title}
+                className="w-32 h-20 object-cover rounded"
+                onError={(e) => e.target.style.display = 'none'}
+              />
+            )}
+            <div className="flex-1">
+              <p className="text-white font-medium truncate">{videoInfo.title || 'Vídeo'}</p>
+              <div className="flex gap-4 mt-2 text-sm text-gray-400">
+                <span>⏱️ Duração: {formatTime(videoInfo.duration)}</span>
+                {videoInfo.views && <span>👁️ {videoInfo.views} visualizações</span>}
+                {videoInfo.uploadDate && <span>📅 {videoInfo.uploadDate}</span>}
+              </div>
+            </div>
           </div>
         </Card>
 
@@ -224,11 +235,11 @@ const VideoConfigPage = () => {
           </div>
         </div>
 
-        {/* Duração de cada corte */}
+        {/* Duração */}
         <div>
           <h3 className="text-white font-semibold mb-2">Duração de cada corte</h3>
           <p className="text-gray-400 text-sm mb-4">
-            Defina a duração de cada corte e até que parte do vídeo a IA deve analisar para encontrar os melhores momentos.
+            Defina a duração de cada corte
           </p>
           
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -254,21 +265,19 @@ const VideoConfigPage = () => {
             ))}
           </div>
 
-          {/* Preview dos cortes calculados */}
           {calculatedClips && (
             <Card className="mt-4 bg-yellow-900/20 border border-yellow-700/50 p-4">
               <div className="flex items-start gap-3">
                 <Clock className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <p className="text-white font-medium mb-1">
-                    Cada corte terá 1 minuto do vídeo: Você terá {calculatedClips.numClips} créditos — selecionou 5 min de {formatTime(calculatedClips.totalSeconds)} disponíveis
+                    {calculatedClips.numClips} cortes serão gerados
                   </p>
                   <p className="text-gray-300 text-sm">
-                    📊 <strong>Cálculo:</strong> {formatTime(calculatedClips.totalSeconds)} ÷ {formatTime(calculatedClips.desiredDuration)} = {calculatedClips.numClips.toFixed(2)} cortes → 
-                    Arredondado para <strong className="text-yellow-400">{calculatedClips.numClips} cortes</strong>
+                    📊 Cálculo: {formatTime(calculatedClips.totalSeconds)} ÷ {formatTime(calculatedClips.desiredDuration)} = {calculatedClips.numClips} cortes
                   </p>
                   <p className="text-gray-300 text-sm mt-1">
-                    ⏱️ <strong>Duração real de cada corte:</strong> {formatTime(calculatedClips.realDuration)}
+                    ⏱️ Duração de cada corte: {formatTime(calculatedClips.realDuration)}
                   </p>
                 </div>
               </div>
