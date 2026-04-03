@@ -13,7 +13,9 @@ const VideoEditor = () => {
   
   const videoInfo = location.state?.videoInfo || {
     title: 'Vídeo sem título',
-    duration: 0
+    duration: 0,
+    thumbnail: null,
+    videoUrl: null
   };
 
   const steps = [
@@ -44,11 +46,11 @@ const VideoEditor = () => {
 
   const generateMockClips = () => {
     const mockClips = [
-      { id: 1, score: 9.2, title: 'Momento épico', duration: '0:52', start: '22:19', end: '23:11' },
-      { id: 2, score: 9.0, title: 'Reação incrível', duration: '0:52', start: '9:05', end: '9:57' },
-      { id: 3, score: 9.0, title: 'Análise profunda', duration: '0:52', start: '20:25', end: '21:17' },
-      { id: 4, score: 8.7, title: 'Discussão intensa', duration: '0:42', start: '8:03', end: '8:45' },
-      { id: 5, score: 8.5, title: 'Momento tenso', duration: '1:02', start: '11:38', end: '12:40' }
+      { id: 1, score: 9.2, title: 'Momento épico', duration: '0:52', start: '22:19', end: '23:11', thumbnail: videoInfo.thumbnail },
+      { id: 2, score: 9.0, title: 'Reação incrível', duration: '0:52', start: '9:05', end: '9:57', thumbnail: videoInfo.thumbnail },
+      { id: 3, score: 9.0, title: 'Análise profunda', duration: '0:52', start: '20:25', end: '21:17', thumbnail: videoInfo.thumbnail },
+      { id: 4, score: 8.7, title: 'Discussão intensa', duration: '0:42', start: '8:03', end: '8:45', thumbnail: videoInfo.thumbnail },
+      { id: 5, score: 8.5, title: 'Momento tenso', duration: '1:02', start: '11:38', end: '12:40', thumbnail: videoInfo.thumbnail }
     ];
     setClips(mockClips);
   };
@@ -145,14 +147,24 @@ const VideoEditor = () => {
         {clips.map((clip) => (
           <Card key={clip.id} className="bg-[#1a1a1a] border border-gray-800 overflow-hidden hover:border-gray-700 transition-all group">
             {/* Thumbnail */}
-            <div className="aspect-video bg-gray-900 relative">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                  <Play className="w-8 h-8 text-white" />
+            <div className="aspect-video bg-gray-900 relative overflow-hidden">
+              {clip.thumbnail && (
+                <img 
+                  src={clip.thumbnail} 
+                  alt={clip.title}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
+                />
+              )}
+              <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-400 to-green-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                  <Play className="w-8 h-8 text-black" />
                 </div>
               </div>
               {/* Score Badge */}
-              <div className="absolute top-3 left-3 bg-purple-500 text-white px-3 py-1 rounded-full flex items-center gap-1">
+              <div className="absolute top-3 left-3 bg-gradient-to-r from-yellow-400 to-green-500 text-black px-3 py-1 rounded-full flex items-center gap-1">
                 <Sparkles className="w-4 h-4" />
                 <span className="font-bold">{clip.score}</span>
               </div>

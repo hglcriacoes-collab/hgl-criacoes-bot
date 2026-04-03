@@ -22,34 +22,48 @@ const Dashboard = () => {
   const analyzeVideo = async (url) => {
     setAnalyzing(true);
     try {
-      // Simular análise do vídeo
+      // Extrair informações reais da URL
+      let videoId = null;
+      let videoTitle = 'Vídeo';
+      let thumbnailUrl = null;
+      
+      // Parse YouTube URL
+      if (url.includes('youtube.com') || url.includes('youtu.be')) {
+        const urlParams = new URLSearchParams(new URL(url).search);
+        videoId = urlParams.get('v') || url.split('/').pop();
+        videoTitle = `Vídeo do YouTube`;
+        thumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+      }
+      
+      // Simular análise (2 segundos)
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Mock data - em produção viria da API
-      const mockVideoInfo = {
-        duration: 193, // 3min 13s em segundos
-        title: 'TRUMP, CRISE NO PETRÓLEO E OS DESDOBRAMENTOS DA GUERRA E...',
-        thumbnail: 'https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
+      // Dados do vídeo com URL real
+      const videoInfo = {
+        duration: 193, // Seria obtido da API real
+        title: videoTitle,
+        thumbnail: thumbnailUrl,
+        videoUrl: url,
+        videoId: videoId,
         compatible: true,
-        needsCut: 193 >= 30
+        needsCut: true
       };
       
-      setVideoInfo(mockVideoInfo);
+      setVideoInfo(videoInfo);
       
-      if (mockVideoInfo.needsCut) {
-        // Redirecionar para página de edição
-        navigate('/editor', { state: { videoInfo: mockVideoInfo, url } });
+      if (videoInfo.needsCut) {
+        navigate('/editor', { state: { videoInfo, url } });
       } else {
         toast({
           title: 'Vídeo pronto!',
           description: 'Vídeo menor que 30s não precisa de cortes'
         });
-        navigate('/editor', { state: { videoInfo: mockVideoInfo, url, skipCut: true } });
+        navigate('/editor', { state: { videoInfo, url, skipCut: true } });
       }
     } catch (error) {
       toast({
         title: 'Erro',
-        description: 'Erro ao analisar vídeo',
+        description: 'Erro ao analisar vídeo. Verifique se o link está correto.',
         variant: 'destructive'
       });
     } finally {

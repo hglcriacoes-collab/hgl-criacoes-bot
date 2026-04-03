@@ -1,17 +1,23 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../hooks/use-toast';
-
-const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || '1234567890-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com';
 
 const GoogleLoginButton = () => {
   const navigate = useNavigate();
   const { loginWithGoogle } = useAuth();
   const { toast } = useToast();
+  const [isReady, setIsReady] = useState(false);
+  
+  const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || '1234567890-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com';
+  const IS_CONFIGURED = process.env.REACT_APP_GOOGLE_CLIENT_ID && !process.env.REACT_APP_GOOGLE_CLIENT_ID.includes('1234567890');
 
   useEffect(() => {
-    // Carregar o script do Google
+    if (!IS_CONFIGURED) {
+      setIsReady(false);
+      return;
+    }
+
     const script = document.createElement('script');
     script.src = 'https://accounts.google.com/gsi/client';
     script.async = true;
@@ -20,17 +26,25 @@ const GoogleLoginButton = () => {
 
     script.onload = () => {
       if (window.google) {
-        window.google.accounts.id.initialize({
-          client_id: GOOGLE_CLIENT_ID,
-          callback: handleCredentialResponse,
-        });
+        try {
+          window.google.accounts.id.initialize({
+            client_id: GOOGLE_CLIENT_ID,
+            callback: handleCredentialResponse,
+          });
+          setIsReady(true);
+        } catch (error) {
+          console.error('Erro ao inicializar Google Login:', error);
+          setIsReady(false);
+        }
       }
     };
 
     return () => {
-      document.body.removeChild(script);
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
     };
-  }, []);
+  }, [GOOGLE_CLIENT_ID, IS_CONFIGURED]);
 
   const handleCredentialResponse = async (response) => {
     try {
@@ -59,8 +73,30 @@ const GoogleLoginButton = () => {
   };
 
   const handleGoogleLogin = () => {
-    if (window.google) {
-      window.google.accounts.id.prompt();
+    if (!IS_CONFIGURED) {
+      toast({
+        title: 'Google Login não configurado',
+        description: 'Por favor, configure o Client ID do Google nas Configurações da plataforma.',
+        variant: 'default'
+      });
+      return;
+    }
+
+    if (window.google && isReady) {
+      try {
+        window.google.accounts.id.prompt();
+      } catch (error) {
+        toast({
+          title: 'Erro ao abrir Google Login',
+          description: 'Tente novamente ou use login com email.',
+          variant: 'destructive'
+        });
+      }
+    } else {
+      toast({
+        title: 'Aguarde',
+        description: 'Carregando Google Login...',
+      });
     }
   };
 
