@@ -61,12 +61,12 @@ const Financeiro = () => {
                 key={plan.id}
                 className={`relative overflow-hidden ${
                   plan.popular
-                    ? 'bg-gradient-to-br from-blue-900/40 via-purple-900/40 to-pink-900/40 border-2 border-purple-500 scale-105'
+                    ? 'bg-gradient-to-br from-blue-900/40 via-green-900/40 to-yellow-900/40 border-2 border-yellow-500 scale-105'
                     : 'bg-[#1a1a1a] border border-gray-800'
                 }`}
               >
                 {plan.popular && (
-                  <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-purple-600 via-purple-500 to-pink-500 text-center py-2">
+                  <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-yellow-500 via-yellow-400 to-green-500 text-center py-2">
                     <span className="text-white font-semibold text-sm flex items-center justify-center gap-2">
                       <Sparkles className="w-4 h-4" />
                       Mais Popular
@@ -92,11 +92,11 @@ const Financeiro = () => {
 
                   {/* Subscribe Buttons */}
                   <div className="space-y-3 mb-6">
-                    <Button className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-90 text-white py-6">
+                    <Button className="w-full bg-gradient-to-r from-yellow-400 to-green-500 hover:opacity-90 text-black py-6">
                       <CreditCard className="w-5 h-5 mr-2" />
                       Assinar com Cartão
                     </Button>
-                    <Button variant="outline" className="w-full border-purple-500 text-purple-400 hover:bg-purple-500/10 py-3">
+                    <Button variant="outline" className="w-full border-yellow-500 text-yellow-400 hover:bg-yellow-500/10 py-3">
                       💳 Assinar (PIX)
                     </Button>
                   </div>
@@ -127,7 +127,7 @@ const Financeiro = () => {
                     <h4 className="text-white font-semibold mb-3">O que está incluso:</h4>
                     {plan.features.map((feature, index) => (
                       <div key={index} className="flex items-start gap-3">
-                        <Check className="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" />
+                        <Check className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
                         <span className="text-gray-300 text-sm">{feature}</span>
                       </div>
                     ))}

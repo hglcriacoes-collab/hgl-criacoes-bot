@@ -39,7 +39,7 @@ const Lives = () => {
         
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:opacity-90">
+            <Button className="bg-gradient-to-r from-yellow-400 to-green-500 text-black hover:opacity-90">
               <Plus className="w-5 h-5 mr-2" />
               Criar monitoramento
             </Button>
@@ -72,7 +72,7 @@ const Lives = () => {
                 </p>
               </div>
               <div className="flex gap-2">
-                <Button className="flex-1 bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 text-white hover:opacity-90">
+                <Button className="flex-1 bg-gradient-to-r from-yellow-400 via-green-400 to-green-500 text-black hover:opacity-90">
                   Pública
                   <span className="text-xs ml-2">todos podem acessar os cortes</span>
                 </Button>
@@ -86,11 +86,11 @@ const Lives = () => {
                 <p className="text-gray-400 text-xs mt-1">
                   Cada corte gerado custa 1 crédito. A cada 5 minutos o plano saindo é debitado. Quando o saldo acabar a live será desabilitada normalmente.
                 </p>
-                <Button variant="link" className="text-purple-400 hover:text-purple-300 p-0 h-auto text-xs mt-1">
+                <Button variant="link" className="text-yellow-400 hover:text-yellow-300 p-0 h-auto text-xs mt-1">
                   Saiba mais Quantão isso gastará no meu plano da real
                 </Button>
               </div>
-              <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:opacity-90">
+              <Button className="w-full bg-gradient-to-r from-yellow-400 to-green-500 text-black hover:opacity-90">
                 <Plus className="w-4 h-4 mr-2" />
                 Criar monitoramento
               </Button>
@@ -116,7 +116,7 @@ const Lives = () => {
                 size="sm"
                 onClick={() => setSelectedPlatform(platform)}
                 className={selectedPlatform === platform 
-                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white' 
+                  ? 'bg-gradient-to-r from-yellow-500 to-green-500 text-black' 
                   : 'border-gray-700 text-white hover:bg-gray-800'
                 }
               >
@@ -139,7 +139,7 @@ const Lives = () => {
                     {live.viewers} views
                   </div>
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="w-12 h-12 rounded-full bg-purple-600 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-full bg-yellow-600 flex items-center justify-center">
                       <Play className="w-6 h-6 text-white" />
                     </div>
                   </div>
@@ -148,7 +148,7 @@ const Lives = () => {
                   <h3 className="text-white font-semibold mb-1">{live.title}</h3>
                   <p className="text-gray-400 text-sm">{live.creator}</p>
                   <div className="flex items-center justify-between mt-2">
-                    <span className="text-purple-400 text-xs">{live.platform}</span>
+                    <span className="text-yellow-400 text-xs">{live.platform}</span>
                     <span className="text-red-500 text-xs">● Em andamento</span>
                   </div>
                 </div>

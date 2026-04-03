@@ -126,7 +126,7 @@ Sempre responda em português brasileiro.`,
         <TabsContent value="ai" className="space-y-6 mt-6">
           <Card className="bg-[#1a1a1a] border border-gray-800 p-6">
             <h3 className="text-white text-xl font-semibold mb-6 flex items-center gap-3">
-              <Bot className="w-6 h-6 text-purple-400" />
+              <Bot className="w-6 h-6 text-yellow-400" />
               Configuração do Assistente Virtual
             </h3>
 

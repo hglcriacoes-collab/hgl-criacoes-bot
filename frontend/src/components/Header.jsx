@@ -32,17 +32,17 @@ const Header = ({ title }) => {
   return (
     <>
       {/* Banner de Promoção */}
-      <div className="bg-gradient-to-r from-purple-600 via-purple-500 to-pink-500 py-3 px-6 flex items-center justify-center gap-2">
-        <span className="text-white font-medium text-sm sm:text-base">
+      <div className="bg-gradient-to-r from-yellow-500 via-yellow-400 to-green-500 py-3 px-6 flex items-center justify-center gap-2">
+        <span className="text-black font-bold text-sm sm:text-base">
           🎉 {timeLeft.days}D {String(timeLeft.hours).padStart(2, '0')}h {String(timeLeft.minutes).padStart(2, '0')}m {String(timeLeft.seconds).padStart(2, '0')}s
         </span>
-        <span className="text-white/90 text-sm sm:text-base hidden sm:inline">
+        <span className="text-black font-medium text-sm sm:text-base hidden sm:inline">
           — Ferramenta 100% grátis por 24h!
         </span>
-        <span className="text-white font-medium text-sm sm:text-base">
+        <span className="text-black font-bold text-sm sm:text-base">
           Começa em: {String(timeLeft.hours).padStart(2, '0')}h {String(timeLeft.minutes).padStart(2, '0')}m {String(timeLeft.seconds).padStart(2, '0')}s
         </span>
-        <span className="text-yellow-300">⚡</span>
+        <span className="text-green-600">⚡</span>
       </div>
 
       {/* Header Principal */}

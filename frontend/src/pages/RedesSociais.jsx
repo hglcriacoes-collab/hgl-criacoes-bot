@@ -25,12 +25,12 @@ const RedesSociais = () => {
       </div>
 
       {/* Conectar Plataformas Section */}
-      <Card className="bg-gradient-to-r from-purple-900/30 via-purple-800/30 to-pink-900/30 border border-purple-500/30 p-6">
+      <Card className="bg-gradient-to-r from-yellow-900/30 via-green-900/30 to-yellow-800/30 border border-yellow-500/30 p-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
-            <Icons.Link className="w-5 h-5 text-purple-400" />
+          <div className="w-10 h-10 bg-yellow-500/20 rounded-lg flex items-center justify-center">
+            <Icons.Link className="w-5 h-5 text-yellow-400" />
           </div>
-          <h2 className="text-xl font-semibold text-purple-300">Conectar Plataformas</h2>
+          <h2 className="text-xl font-semibold text-yellow-300">Conectar Plataformas</h2>
         </div>
       </Card>
 
@@ -67,13 +67,13 @@ const RedesSociais = () => {
       </div>
 
       {/* Minhas Contas Section */}
-      <Card className="bg-gradient-to-r from-purple-900/30 via-purple-800/30 to-pink-900/30 border border-purple-500/30 p-6">
+      <Card className="bg-gradient-to-r from-yellow-900/30 via-green-900/30 to-yellow-800/30 border border-yellow-500/30 p-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
-            <Icons.Link className="w-5 h-5 text-purple-400" />
+          <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
+            <Icons.Link className="w-5 h-5 text-green-400" />
           </div>
-          <h2 className="text-xl font-semibold text-purple-300">Minhas Contas</h2>
-          <span className="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-sm font-medium">0</span>
+          <h2 className="text-xl font-semibold text-green-300">Minhas Contas</h2>
+          <span className="bg-green-500/20 text-green-300 px-3 py-1 rounded-full text-sm font-medium">0</span>
         </div>
         <p className="text-gray-400 mt-4">Nenhuma conta conectada ainda. Conecte suas redes sociais acima para começar.</p>
       </Card>

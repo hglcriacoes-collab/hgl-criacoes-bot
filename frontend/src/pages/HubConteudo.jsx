@@ -96,7 +96,7 @@ const HubConteudo = () => {
             <div className="p-4">
               <h3 className="text-white font-semibold mb-2 line-clamp-2">{project.title}</h3>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-purple-400">{project.clips} clips</span>
+                <span className="text-yellow-400">{project.clips} clips</span>
                 <span className="text-gray-500">{project.createdAt}</span>
               </div>
             </div>
