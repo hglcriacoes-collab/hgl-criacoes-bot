@@ -12,6 +12,8 @@ import Dashboard from './pages/Dashboard';
 import RedesSociais from './pages/RedesSociais';
 import Financeiro from './pages/Financeiro';
 import Configuracoes from './pages/Configuracoes';
+import VideoEditor from './pages/VideoEditor';
+import HubConteudo from './pages/HubConteudo';
 
 function App() {
   return (
@@ -35,15 +37,16 @@ function App() {
                         <Routes>
                           <Route path="/" element={<Navigate to="/dashboard" replace />} />
                           <Route path="/dashboard" element={<Dashboard />} />
+                          <Route path="/editor" element={<VideoEditor />} />
+                          <Route path="/hub-conteudo" element={<HubConteudo />} />
                           <Route path="/redes-sociais" element={<RedesSociais />} />
                           <Route path="/financeiro" element={<Financeiro />} />
                           <Route path="/configuracoes" element={<Configuracoes />} />
                           <Route path="/videos" element={<Dashboard />} />
-                          <Route path="/projetos" element={<Dashboard />} />
+                          <Route path="/projetos" element={<HubConteudo />} />
                           <Route path="/meus-videos" element={<Dashboard />} />
                           <Route path="/lives" element={<Dashboard />} />
                           <Route path="/fila-economica" element={<Dashboard />} />
-                          <Route path="/hub-conteudo" element={<Dashboard />} />
                           <Route path="/conteudo" element={<RedesSociais />} />
                           <Route path="/agendamento" element={<RedesSociais />} />
                           <Route path="/brand-kit" element={<RedesSociais />} />
