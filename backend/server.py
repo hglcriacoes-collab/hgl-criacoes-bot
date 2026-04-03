@@ -7,7 +7,7 @@ import logging
 from pathlib import Path
 
 # Import routes
-from routes import auth, user, projects, settings, chat
+from routes import auth, user, projects, settings, chat, social_automation, video_processing
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -34,6 +34,8 @@ app.include_router(user.router, prefix="")
 app.include_router(projects.router, prefix="")
 app.include_router(settings.router, prefix="")
 app.include_router(chat.router, prefix="")
+app.include_router(social_automation.router, prefix="")
+app.include_router(video_processing.router, prefix="")
 app.include_router(api_router)
 
 app.add_middleware(
