@@ -60,6 +60,16 @@ Sempre responda em português brasileiro.`,
     enabled: false
   });
 
+  const [socialMediaAPIs, setSocialMediaAPIs] = useState([
+    { id: 'tiktok', name: 'TikTok', fields: [{ key: 'apiKey', label: 'API Key', type: 'password' }, { key: 'secret', label: 'API Secret', type: 'password' }], enabled: false, values: {} },
+    { id: 'instagram', name: 'Instagram', fields: [{ key: 'accessToken', label: 'Access Token', type: 'password' }], enabled: false, values: {} },
+    { id: 'youtube', name: 'YouTube', fields: [{ key: 'apiKey', label: 'API Key', type: 'password' }, { key: 'channelId', label: 'Channel ID', type: 'text' }], enabled: false, values: {} },
+    { id: 'kwai', name: 'Kwai', fields: [{ key: 'phone', label: 'Telefone', type: 'tel' }], enabled: false, values: {} },
+    { id: 'snapchat', name: 'Snapchat', fields: [{ key: 'username', label: 'Username', type: 'text' }, { key: 'password', label: 'Senha', type: 'password' }], enabled: false, values: {} },
+    { id: 'telegram', name: 'Telegram', fields: [{ key: 'botToken', label: 'Bot Token', type: 'password' }], enabled: false, values: {} },
+    { id: 'wechat', name: 'WeChat', fields: [{ key: 'appId', label: 'App ID', type: 'password' }, { key: 'appSecret', label: 'App Secret', type: 'password' }], enabled: false, values: {} }
+  ]);
+
   const handleSaveAI = () => {
     toast({
       title: 'Configurações de IA salvas!',
@@ -78,6 +88,13 @@ Sempre responda em português brasileiro.`,
     toast({
       title: 'WhatsApp configurado!',
       description: 'Seu número de WhatsApp foi salvo com sucesso.',
+    });
+  };
+
+  const handleSaveSocial = () => {
+    toast({
+      title: 'Redes sociais configuradas!',
+      description: 'Suas credenciais foram salvas com sucesso.',
     });
   };
 
