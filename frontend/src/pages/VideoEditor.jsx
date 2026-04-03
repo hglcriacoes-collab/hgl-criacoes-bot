@@ -71,12 +71,12 @@ const VideoEditor = () => {
                 key={step.id}
                 className={`flex items-center gap-4 p-4 rounded-lg border ${
                   currentStep >= step.id
-                    ? 'border-purple-500 bg-purple-500/10'
+                    ? 'border-yellow-500 bg-yellow-500/10'
                     : 'border-gray-800 bg-gray-900/50'
                 }`}
               >
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  currentStep >= step.id ? 'bg-purple-500' : 'bg-gray-800'
+                  currentStep >= step.id ? 'bg-gradient-to-br from-yellow-400 to-green-500' : 'bg-gray-800'
                 }`}>
                   <span className="text-2xl">{step.icon}</span>
                 </div>
@@ -88,7 +88,7 @@ const VideoEditor = () => {
                   </p>
                 </div>
                 {currentStep === step.id && (
-                  <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-6 h-6 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin"></div>
                 )}
                 {currentStep > step.id && (
                   <span className="text-green-500 text-2xl">✓</span>

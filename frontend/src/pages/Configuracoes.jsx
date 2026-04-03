@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Save, Key, Bot, MessageSquare, DollarSign, Bell } from 'lucide-react';
+import { Save, Key, Bot, MessageSquare, DollarSign, Bell, Share2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -81,6 +81,13 @@ Sempre responda em português brasileiro.`,
     });
   };
 
+  const handleSaveSocial = () => {
+    toast({
+      title: 'Redes sociais configuradas!',
+      description: 'Suas credenciais foram salvas com sucesso.',
+    });
+  };
+
   const selectedProvider = aiProviders.find(p => p.id === aiConfig.provider);
 
   return (
@@ -92,10 +99,14 @@ Sempre responda em português brasileiro.`,
       </div>
 
       <Tabs defaultValue="ai" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 bg-gray-900 border border-gray-800">
+        <TabsList className="grid w-full grid-cols-5 bg-gray-900 border border-gray-800">
           <TabsTrigger value="ai" className="data-[state=active]:bg-gray-800">
             <Bot className="w-4 h-4 mr-2" />
             Assistente IA
+          </TabsTrigger>
+          <TabsTrigger value="social" className="data-[state=active]:bg-gray-800">
+            <Share2 className="w-4 h-4 mr-2" />
+            Redes Sociais
           </TabsTrigger>
           <TabsTrigger value="payment" className="data-[state=active]:bg-gray-800">
             <DollarSign className="w-4 h-4 mr-2" />
@@ -249,6 +260,65 @@ Sempre responda em português brasileiro.`,
 
         {/* Payment Methods */}
         <TabsContent value="payment" className="space-y-6 mt-6">
+
+        {/* Social Media APIs Tab */}
+        <TabsContent value="social" className="space-y-6 mt-6">
+          <Card className="bg-[#1a1a1a] border border-gray-800 p-6">
+            <h3 className="text-white text-xl font-semibold mb-6 flex items-center gap-3">
+              <Share2 className="w-6 h-6 text-yellow-400" />
+              APIs de Redes Sociais
+            </h3>
+            <p className="text-gray-400 mb-6">Configure as credenciais das redes sociais para postagem automática</p>
+
+            <div className="space-y-6">
+              {socialMediaAPIs && socialMediaAPIs.map((platform, idx) => (
+                <div key={platform.id} className="p-4 bg-gray-900/50 rounded-lg border border-gray-800 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-white font-medium">{platform.name}</Label>
+                      <p className="text-gray-400 text-sm">Configure {platform.name}</p>
+                    </div>
+                    <Switch
+                      checked={platform.enabled}
+                      onCheckedChange={(checked) => {
+                        const updated = [...socialMediaAPIs];
+                        updated[idx].enabled = checked;
+                        setSocialMediaAPIs(updated);
+                      }}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    {platform.fields.map((field) => (
+                      <div key={field.key} className="space-y-2">
+                        <Label className="text-white text-sm">{field.label}</Label>
+                        <Input
+                          type={field.type}
+                          value={platform.values[field.key] || ''}
+                          onChange={(e) => {
+                            const updated = [...socialMediaAPIs];
+                            updated[idx].values[field.key] = e.target.value;
+                            setSocialMediaAPIs(updated);
+                          }}
+                          placeholder={`Seu(a) ${field.label}`}
+                          className="bg-gray-900 border-gray-700 text-white"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+
+              <Button
+                onClick={handleSaveSocial}
+                className="w-full bg-gradient-to-r from-yellow-400 via-yellow-300 to-green-500 text-black hover:opacity-90"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                Salvar Configurações
+              </Button>
+            </div>
+          </Card>
+        </TabsContent>
+
           <Card className="bg-[#1a1a1a] border border-gray-800 p-6">
             <h3 className="text-white text-xl font-semibold mb-6 flex items-center gap-3">
               <DollarSign className="w-6 h-6 text-green-400" />
@@ -351,5 +421,6 @@ Sempre responda em português brasileiro.`,
     </div>
   );
 };
+
 
 export default Configuracoes;

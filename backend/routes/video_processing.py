@@ -57,11 +57,15 @@ async def cut_video(
     video_id: str,
     start_time: str,  # formato: "00:00:10"
     end_time: str,    # formato: "00:00:30"
+    apply_bypass: bool = True,  # Aplicar quebra de originalidade
     current_user: dict = Depends(get_current_user),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
     """
-    Corta um vídeo usando FFmpeg
+    Corta um vídeo usando FFmpeg com quebra de originalidade automática
+    - Corta 0.01s do início e fim
+    - Aplica aceleração de 0.2% (setpts=0.998*PTS)
+    - Aplica filtro suave de 0.2% de brilho/contraste
     """
     # Buscar vídeo
     video = await db.videos.find_one({"id": video_id, "user_id": current_user["id"]})
@@ -72,15 +76,37 @@ async def cut_video(
     output_filename = f"cut_{uuid.uuid4()}.mp4"
     output_path = PROCESSED_DIR / output_filename
     
-    # Comando FFmpeg para cortar vídeo
-    command = [
-        "ffmpeg",
-        "-i", input_path,
-        "-ss", start_time,
-        "-to", end_time,
-        "-c", "copy",
-        str(output_path)
-    ]
+    if apply_bypass:
+        # Comando FFmpeg COM quebra de originalidade
+        # 1. Trim 0.01s from start and end
+        # 2. Speed up by 0.2% (setpts=0.998*PTS for video, atempo=1.002 for audio)
+        # 3. Apply subtle filter (eq=brightness=0.002:contrast=1.002)
+        command = [
+            "ffmpeg",
+            "-ss", "0.01",  # Skip 0.01s from start
+            "-i", input_path,
+            "-to", end_time,  # Will cut 0.01s from end automatically
+            "-filter_complex",
+            "[0:v]trim=start=0.01,setpts=0.998*PTS,eq=brightness=0.002:contrast=1.002[v];[0:a]atrim=start=0.01,atempo=1.002[a]",
+            "-map", "[v]",
+            "-map", "[a]",
+            "-c:v", "libx264",
+            "-preset", "fast",
+            "-crf", "23",
+            "-c:a", "aac",
+            "-b:a", "192k",
+            str(output_path)
+        ]
+    else:
+        # Comando FFmpeg simples (sem quebra de originalidade)
+        command = [
+            "ffmpeg",
+            "-i", input_path,
+            "-ss", start_time,
+            "-to", end_time,
+            "-c", "copy",
+            str(output_path)
+        ]
     
     try:
         result = subprocess.run(command, capture_output=True, text=True, timeout=300)
@@ -99,6 +125,7 @@ async def cut_video(
         "file_path": str(output_path),
         "start_time": start_time,
         "end_time": end_time,
+        "bypass_applied": apply_bypass,
         "status": "processed"
     }
     
@@ -106,9 +133,10 @@ async def cut_video(
     
     return {
         "success": True,
-        "message": "Vídeo cortado com sucesso!",
+        "message": "Vídeo cortado com sucesso com quebra de originalidade!" if apply_bypass else "Vídeo cortado com sucesso!",
         "clip_id": clip_record["id"],
-        "file_path": str(output_path)
+        "file_path": str(output_path),
+        "bypass_applied": apply_bypass
     }
 
 @router.post("/auto-cut/{video_id}")

@@ -14,6 +14,10 @@ import Financeiro from './pages/Financeiro';
 import Configuracoes from './pages/Configuracoes';
 import VideoEditor from './pages/VideoEditor';
 import HubConteudo from './pages/HubConteudo';
+import MeusVideos from './pages/MeusVideos';
+import Agendamento from './pages/Agendamento';
+import BrandKit from './pages/BrandKit';
+import Campeonatos from './pages/Campeonatos';
 
 function App() {
   return (
@@ -44,13 +48,13 @@ function App() {
                           <Route path="/configuracoes" element={<Configuracoes />} />
                           <Route path="/videos" element={<Dashboard />} />
                           <Route path="/projetos" element={<HubConteudo />} />
-                          <Route path="/meus-videos" element={<Dashboard />} />
+                          <Route path="/meus-videos" element={<MeusVideos />} />
                           <Route path="/lives" element={<Dashboard />} />
                           <Route path="/fila-economica" element={<Dashboard />} />
                           <Route path="/conteudo" element={<RedesSociais />} />
-                          <Route path="/agendamento" element={<RedesSociais />} />
-                          <Route path="/brand-kit" element={<RedesSociais />} />
-                          <Route path="/campeonatos" element={<Dashboard />} />
+                          <Route path="/agendamento" element={<Agendamento />} />
+                          <Route path="/brand-kit" element={<BrandKit />} />
+                          <Route path="/campeonatos" element={<Campeonatos />} />
                           <Route path="/podcasts" element={<Dashboard />} />
                           <Route path="/ia" element={<Dashboard />} />
                         </Routes>
