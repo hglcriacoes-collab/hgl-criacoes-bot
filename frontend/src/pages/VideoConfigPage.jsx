@@ -55,6 +55,9 @@ const VideoConfigPage = () => {
   };
 
   const handleNext = async () => {
+    // Timestamp para forçar nova versão: 2026-04-03-23:00
+    console.log('VideoConfigPage - Versão Nova: 2026-04-03-23:00');
+    
     try {
       // Chamar API para processar os cortes
       const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -65,6 +68,8 @@ const VideoConfigPage = () => {
         navigate('/login');
         return;
       }
+      
+      console.log('Enviando requisição para:', `${API_URL}/api/video/process-clips`);
       
       const response = await fetch(`${API_URL}/api/video/process-clips`, {
         method: 'POST',
@@ -82,8 +87,11 @@ const VideoConfigPage = () => {
         })
       });
       
-      // Ler response apenas UMA vez
+      console.log('Response recebido:', response.status);
+      
+      // ✅ CORREÇÃO: Ler response apenas UMA vez
       const data = await response.json();
+      console.log('Data parseado:', data);
       
       if (!response.ok) {
         throw new Error(data.detail || data.message || 'Erro ao processar vídeo');
