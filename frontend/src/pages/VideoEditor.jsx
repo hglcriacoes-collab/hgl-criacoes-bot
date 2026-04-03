@@ -10,6 +10,8 @@ const VideoEditor = () => {
   const [processing, setProcessing] = useState(true);
   const [currentStep, setCurrentStep] = useState(1);
   const [clips, setClips] = useState([]);
+  const [progress, setProgress] = useState(0);
+  const [jobStatus, setJobStatus] = useState('processing');
   
   const videoInfo = location.state?.videoInfo || {
     title: 'Vídeo sem título',
@@ -17,6 +19,9 @@ const VideoEditor = () => {
     thumbnail: null,
     videoUrl: null
   };
+  
+  const jobId = location.state?.jobId;
+  const numClips = location.state?.numClips || 0;
 
   const steps = [
     { id: 1, name: 'Baixando vídeo', icon: '⬇️' },

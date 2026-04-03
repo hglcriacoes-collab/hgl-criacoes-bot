@@ -54,20 +54,53 @@ const VideoConfigPage = () => {
     return mins > 0 ? `${mins}:${secs.toString().padStart(2, '0')} min` : `${secs} seg`;
   };
 
-  const handleNext = () => {
-    // Navegar para página de processamento
-    navigate('/editor', {
-      state: {
-        videoInfo,
-        url,
-        config: {
-          format,
-          framing,
-          clipDuration: clipDuration === 'automatico' ? 15 : parseInt(clipDuration),
-          calculatedClips
-        }
+  const handleNext = async () => {
+    try {
+      // Chamar API para processar os cortes
+      const API_URL = process.env.REACT_APP_BACKEND_URL;
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch(`${API_URL}/api/video/process-clips`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          video_url: url,
+          video_duration: videoInfo.duration,
+          clip_duration: clipDuration === 'automatico' ? 15 : parseInt(clipDuration),
+          format: format,
+          framing: framing,
+          apply_bypass: true
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        // Navegar para página de processamento com job_id
+        navigate('/editor', {
+          state: {
+            videoInfo,
+            url,
+            jobId: data.job_id,
+            numClips: data.num_clips,
+            config: {
+              format,
+              framing,
+              clipDuration: clipDuration === 'automatico' ? 15 : parseInt(clipDuration),
+              calculatedClips
+            }
+          }
+        });
+      } else {
+        alert('Erro ao iniciar processamento');
       }
-    });
+    } catch (error) {
+      console.error('Erro:', error);
+      alert('Erro ao processar vídeo');
+    }
   };
 
   if (!videoInfo) {
