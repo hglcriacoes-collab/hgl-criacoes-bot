@@ -82,12 +82,12 @@ const VideoConfigPage = () => {
         })
       });
       
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.detail || 'Erro ao processar vídeo');
-      }
-      
+      // Ler response apenas UMA vez
       const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.detail || data.message || 'Erro ao processar vídeo');
+      }
       
       if (data.success) {
         // Navegar para página de processamento com job_id
