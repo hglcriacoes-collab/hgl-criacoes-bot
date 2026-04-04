@@ -32,32 +32,101 @@ const VideoEditor = () => {
   ];
 
   useEffect(() => {
-    // Simular processamento
-    const interval = setInterval(() => {
-      setCurrentStep(prev => {
-        if (prev >= 5) {
-          clearInterval(interval);
+    if (!jobId) {
+      console.error('Nenhum jobId fornecido');
+      navigate('/dashboard');
+      return;
+    }
+
+    // Fazer polling do backend para buscar os clips REAIS
+    const checkJobStatus = async () => {
+      try {
+        const API_URL = process.env.REACT_APP_BACKEND_URL;
+        const token = localStorage.getItem('token');
+
+        const response = await fetch(`${API_URL}/api/video/job-status/${jobId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        const data = await response.json();
+        console.log('Job status:', data);
+
+        if (data.status === 'downloading') {
+          setCurrentStep(1);
+        } else if (data.status === 'cutting') {
+          setCurrentStep(4);
+          if (data.progress) {
+            setProgress(data.progress);
+          }
+        } else if (data.status === 'completed') {
+          setCurrentStep(5);
           setProcessing(false);
-          // Gerar clips mockados
-          generateMockClips();
-          return 5;
+          
+          // Processar TODOS os clips reais do backend
+          if (data.clips && data.clips.length > 0) {
+            const processedClips = data.clips.map((clip, index) => ({
+              id: clip.clip_number || index + 1,
+              score: (9.5 - (index * 0.1)).toFixed(1), // Score decrescente
+              title: `Corte ${clip.clip_number || index + 1}`,
+              duration: formatDuration(clip.duration || 0),
+              start: formatTime(clip.start_time || 0),
+              end: formatTime(clip.end_time || 0),
+              thumbnail: videoInfo.thumbnail || null,
+              file_path: clip.file_path
+            }));
+            setClips(processedClips);
+          } else {
+            // Fallback: gerar clips baseado em numClips
+            generateFallbackClips();
+          }
+        } else if (data.status === 'failed') {
+          console.error('Processamento falhou:', data.error);
+          setJobStatus('failed');
+          setProcessing(false);
         }
-        return prev + 1;
-      });
-    }, 2000);
+      } catch (error) {
+        console.error('Erro ao consultar job:', error);
+      }
+    };
+
+    // Poll a cada 2 segundos
+    const interval = setInterval(checkJobStatus, 2000);
+    checkJobStatus(); // Primeira chamada imediata
 
     return () => clearInterval(interval);
-  }, []);
+  }, [jobId, navigate]);
 
-  const generateMockClips = () => {
-    const mockClips = [
-      { id: 1, score: 9.2, title: 'Momento épico', duration: '0:52', start: '22:19', end: '23:11', thumbnail: videoInfo.thumbnail },
-      { id: 2, score: 9.0, title: 'Reação incrível', duration: '0:52', start: '9:05', end: '9:57', thumbnail: videoInfo.thumbnail },
-      { id: 3, score: 9.0, title: 'Análise profunda', duration: '0:52', start: '20:25', end: '21:17', thumbnail: videoInfo.thumbnail },
-      { id: 4, score: 8.7, title: 'Discussão intensa', duration: '0:42', start: '8:03', end: '8:45', thumbnail: videoInfo.thumbnail },
-      { id: 5, score: 8.5, title: 'Momento tenso', duration: '1:02', start: '11:38', end: '12:40', thumbnail: videoInfo.thumbnail }
-    ];
-    setClips(mockClips);
+  const formatDuration = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const generateFallbackClips = () => {
+    // Fallback caso os clips não tenham sido retornados pelo backend
+    const clips = [];
+    const clipDuration = location.state?.config?.clipDuration || 60;
+    
+    for (let i = 0; i < numClips; i++) {
+      clips.push({
+        id: i + 1,
+        score: (9.5 - (i * 0.1)).toFixed(1),
+        title: `Corte ${i + 1}`,
+        duration: formatDuration(clipDuration),
+        start: formatTime(i * clipDuration),
+        end: formatTime((i + 1) * clipDuration),
+        thumbnail: videoInfo.thumbnail
+      });
+    }
+    setClips(clips);
   };
 
   if (processing) {

@@ -57,80 +57,19 @@ const VideoConfigPage = () => {
 
 
   const handleNext = async () => {
-    console.log('🔥 NOVA VERSÃO - 2026-04-03 23:30');
-    
-    try {
-      const API_URL = process.env.REACT_APP_BACKEND_URL;
-      const token = localStorage.getItem('token');
-      
-      if (!token) {
-        alert('Faça login novamente');
-        navigate('/login');
-        return;
+    // Navegar para a página de ajuste com IA (intermediária)
+    navigate('/video-ai-analysis', {
+      state: {
+        videoInfo,
+        url: url || videoInfo?.videoUrl,
+        config: {
+          format,
+          framing,
+          clipDuration: clipDuration === 'automatico' ? 15 : parseInt(clipDuration),
+          calculatedClips
+        }
       }
-
-      console.log('📤 Enviando...');
-      
-      const requestBody = {
-        video_url: url || videoInfo?.videoUrl || '',
-        video_duration: videoInfo?.duration || 0,
-        clip_duration: clipDuration === 'automatico' ? 15 : parseInt(clipDuration),
-        format: format,
-        framing: framing,
-        apply_bypass: true
-      };
-
-      console.log('📦 Dados:', requestBody);
-
-      const response = await fetch(`${API_URL}/api/video/process-clips`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(requestBody)
-      });
-
-      console.log('📥 Response status:', response.status);
-
-      // CRÍTICO: Ler JSON apenas UMA vez
-      let data;
-      try {
-        data = await response.json();
-        console.log('✅ Data:', data);
-      } catch (jsonError) {
-        console.error('❌ Erro ao parsear JSON:', jsonError);
-        throw new Error('Erro ao processar resposta do servidor');
-      }
-
-      if (!response.ok) {
-        console.error('❌ Response não OK:', data);
-        throw new Error(data.detail || data.message || 'Erro ao processar');
-      }
-
-      if (data.success) {
-        console.log('✅ Sucesso! Navegando...');
-        navigate('/editor', {
-          state: {
-            videoInfo,
-            url: url || videoInfo?.videoUrl,
-            jobId: data.job_id,
-            numClips: data.num_clips,
-            config: {
-              format,
-              framing,
-              clipDuration: clipDuration === 'automatico' ? 15 : parseInt(clipDuration),
-              calculatedClips
-            }
-          }
-        });
-      } else {
-        throw new Error(data.message || 'Erro desconhecido');
-      }
-    } catch (error) {
-      console.error('❌ ERRO CAPTURADO:', error);
-      alert('Erro: ' + error.message);
-    }
+    });
   };
 
   if (!videoInfo) {
