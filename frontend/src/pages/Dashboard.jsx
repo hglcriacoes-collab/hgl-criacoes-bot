@@ -22,41 +22,44 @@ const Dashboard = () => {
   const analyzeVideo = async (url) => {
     setAnalyzing(true);
     try {
-      // Extrair informações reais da URL
-      let videoId = null;
-      let videoTitle = 'Vídeo';
-      let thumbnailUrl = null;
+      // Extrair metadados REAIS usando yt-dlp no backend
+      const response = await axios.post(
+        `${API_URL}/api/video/extract-metadata`,
+        { video_url: url },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
       
-      // Parse YouTube URL
-      if (url.includes('youtube.com') || url.includes('youtu.be')) {
-        const urlParams = new URLSearchParams(new URL(url).search);
-        videoId = urlParams.get('v') || url.split('/').pop();
-        videoTitle = `Vídeo do YouTube`;
-        thumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+      if (response.data.success) {
+        const metadata = response.data.metadata;
+        
+        // Dados do vídeo com metadados REAIS
+        const videoInfo = {
+          duration: metadata.duration,
+          title: metadata.title,
+          thumbnail: metadata.thumbnail,
+          views: metadata.views,
+          uploadDate: metadata.upload_date,
+          channel: metadata.channel,
+          videoUrl: url,
+          videoId: metadata.video_id,
+          compatible: true,
+          needsCut: metadata.duration > 30
+        };
+        
+        setVideoInfo(videoInfo);
+        
+        // Redirecionar para página de configuração
+        navigate('/video-config', { state: { videoInfo, url } });
       }
-      
-      // Simular análise (2 segundos)
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Dados do vídeo com URL real
-      const videoInfo = {
-        duration: 193, // Seria obtido da API real
-        title: videoTitle,
-        thumbnail: thumbnailUrl,
-        videoUrl: url,
-        videoId: videoId,
-        compatible: true,
-        needsCut: true
-      };
-      
-      setVideoInfo(videoInfo);
-      
-      // Redirecionar para página de configuração antes do editor
-      navigate('/video-config', { state: { videoInfo, url } });
     } catch (error) {
+      console.error('Erro ao extrair metadados:', error);
       toast({
         title: 'Erro',
-        description: 'Erro ao analisar vídeo. Verifique se o link está correto.',
+        description: error.response?.data?.detail || 'Erro ao analisar vídeo. Verifique se o link está correto.',
         variant: 'destructive'
       });
     } finally {

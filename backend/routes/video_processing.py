@@ -7,10 +7,12 @@ from typing import Optional
 import os
 import subprocess
 import uuid
+from uuid import uuid4
 from pathlib import Path
 import shutil
 from datetime import datetime, timezone
 import math
+import json
 
 router = APIRouter(prefix="/api/video", tags=["video-processing"])
 
@@ -26,6 +28,61 @@ class ClipConfigRequest(BaseModel):
     format: str  # "vertical" ou "horizontal"
     framing: str  # "automatico", "centro", etc
     apply_bypass: bool = True
+
+class VideoMetadataRequest(BaseModel):
+    video_url: str
+
+@router.post("/extract-metadata")
+async def extract_video_metadata(
+    request: VideoMetadataRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Extrai metadados de um vídeo usando yt-dlp
+    Retorna: título, duração, visualizações, data de upload, thumbnail
+    """
+    try:
+        # Usar yt-dlp para extrair metadados JSON
+        cmd = [
+            "/root/.venv/bin/yt-dlp",
+            "--dump-json",
+            "--no-download",
+            request.video_url
+        ]
+        
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+        
+        if result.returncode != 0:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Erro ao extrair metadados: {result.stderr}"
+            )
+        
+        # Parse JSON
+        metadata = json.loads(result.stdout)
+        
+        # Extrair informações principais
+        return {
+            "success": True,
+            "metadata": {
+                "title": metadata.get("title", "Vídeo sem título"),
+                "duration": metadata.get("duration", 0),
+                "views": metadata.get("view_count", 0),
+                "upload_date": metadata.get("upload_date", ""),
+                "thumbnail": metadata.get("thumbnail", ""),
+                "description": metadata.get("description", "")[:200],  # Primeiros 200 chars
+                "channel": metadata.get("uploader", ""),
+                "video_id": metadata.get("id", "")
+            }
+        }
+        
+    except subprocess.TimeoutExpired:
+        raise HTTPException(status_code=408, detail="Timeout ao extrair metadados")
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=500, detail="Erro ao parsear metadados do vídeo")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro inesperado: {str(e)}")
+
 
 @router.post("/upload")
 async def upload_video(
@@ -243,9 +300,9 @@ async def process_video_clips(
         video_filename = f"video_{job_id}.mp4"
         video_path = UPLOAD_DIR / video_filename
         
-        # Download com yt-dlp
+        # Download com yt-dlp (usando caminho completo)
         download_cmd = [
-            "yt-dlp",
+            "/root/.venv/bin/yt-dlp",
             "-f", "best[ext=mp4]",
             "-o", str(video_path),
             config.video_url

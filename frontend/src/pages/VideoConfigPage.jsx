@@ -48,6 +48,14 @@ const VideoConfigPage = () => {
     return mins > 0 ? `${mins}:${secs.toString().padStart(2, '0')} min` : `${secs} seg`;
   };
 
+  const formatViews = (views) => {
+    if (!views) return '0 visualizações';
+    if (views >= 1000000) return `${(views / 1000000).toFixed(1)}M visualizações`;
+    if (views >= 1000) return `${(views / 1000).toFixed(1)}K visualizações`;
+    return `${views} visualizações`;
+  };
+
+
   const handleNext = async () => {
     console.log('🔥 NOVA VERSÃO - 2026-04-03 23:30');
     
@@ -156,8 +164,8 @@ const VideoConfigPage = () => {
               <p className="text-white font-medium truncate">{videoInfo.title || 'Vídeo'}</p>
               <div className="flex gap-4 mt-2 text-sm text-gray-400">
                 <span>⏱️ Duração: {formatTime(videoInfo.duration)}</span>
-                {videoInfo.views && <span>👁️ {videoInfo.views} visualizações</span>}
-                {videoInfo.uploadDate && <span>📅 {videoInfo.uploadDate}</span>}
+                {videoInfo.views && <span>👁️ {formatViews(videoInfo.views)}</span>}
+                {videoInfo.channel && <span>📺 {videoInfo.channel}</span>}
               </div>
             </div>
           </div>
