@@ -300,10 +300,13 @@ async def process_video_clips(
         video_filename = f"video_{job_id}.mp4"
         video_path = UPLOAD_DIR / video_filename
         
-        # Download com yt-dlp (usando caminho completo)
+        # Download com yt-dlp (com flags para evitar 403)
         download_cmd = [
             "/root/.venv/bin/yt-dlp",
-            "-f", "best[ext=mp4]",
+            "--no-check-certificates",
+            "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            "--referer", "https://www.youtube.com/",
+            "-f", "best[ext=mp4]/best",
             "-o", str(video_path),
             config.video_url
         ]
